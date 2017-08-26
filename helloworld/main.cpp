@@ -8,13 +8,17 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	//回调函数，在window大小被改变时，调用
 	glViewport(0, 0, width, height);
 }
-
+float xOffset = 0;
 void processInput(GLFWwindow *window) {
 	//检查输入（即是否按下某个键) 在Render Loop中执行，为简洁性，独立一个函数
 
 	//Esc
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) {
+		xOffset += 0.01;
+		if (xOffset > 1) xOffset = -1;
+	}
 }
 
 //创建窗口
@@ -98,12 +102,10 @@ int main() {
 		
 		//绘制物体
 		shader.use();//激活渲染程序
-
-		float timeValue = (float)glfwGetTime();
-		float greenValue = sin(timeValue) / 2.0f + 0.5f;
-		int vertexColorLocation = glGetUniformLocation(shader.Program, "ourColor");
-		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
-
+		
+		//改变uniform
+		shader.setFloat("xOffset", xOffset);
+		//cout << xOffset << endl;
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
