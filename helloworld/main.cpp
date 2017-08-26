@@ -19,19 +19,23 @@ void processInput(GLFWwindow *window) {
 
 //GLSL顶点着色器的源代码
 const char *vertexShaderSource =
-	"#version 330 core\n"	//版本声明
-	"layout (location = 0) in vec3 aPos;\n" //in 代表 输入？
-	"void main()\n"
-	"{\n"
-	"	gl_Position = vec4(aPos.x,aPos.y,aPos.z,1.0);\n"//设置顶点着色器的输出
-	"}\n\0";
+"#version 330 core\n"	//版本声明
+"layout (location = 0) in vec3 aPos;\n" //in 代表 输入？
+"layout (location = 1) in vec3 aColor;\n"
+"out vec3 ourColor;\n"
+"void main()\n"
+"{\n"
+"	gl_Position = vec4(aPos.x,aPos.y,aPos.z,1.0);\n"//设置顶点着色器的输出
+"	ourColor = aColor;"
+"}\n\0";
 
 const char *fragmentShagerSource =
 	"#version 330 core\n"
 	"out vec4 FragColor;\n"//用out声明输出变量
+	"in vec3 ourColor;\n"
 	"void main()\n"
 	"{\n"
-	"    FragColor = vec4(1.0f,0.5f,0.2f,1.0f); \n"//设置输出（颜色
+	"    FragColor = vec4(ourColor,1.0); \n"//设置输出（颜色
 	"}\n\0";
 
 
@@ -70,9 +74,10 @@ int main() {
 
 	//三个顶点
 	float vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		//位置				//颜色
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
 	};
 
 	unsigned int VBO; //对象id
@@ -153,8 +158,11 @@ int main() {
 	//告知OpenGL如何解释这些顶点数据
 	//参数：顶点属性（位置值，先前在vertexShader源码中设置了location为0了）,
 	//	   顶点属性的大小（vec3),数据的类型，是否标准化，位置数据在缓冲中起始位置的Offset
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	//颜色属性
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 
 	//渲染循环（Render Loop)
@@ -167,6 +175,12 @@ int main() {
 		
 		//绘制物体
 		glUseProgram(shaderProgram);//激活渲染程序
+
+		float timeValue = glfwGetTime();
+		float greenValue = sin(timeValue) / 2.0f + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
+
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
