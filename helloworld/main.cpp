@@ -3,6 +3,10 @@
 #include <iostream>
 #include "shader.h"
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -30,8 +34,19 @@ void processInput(GLFWwindow *window) {
 	}
 }
 
+void testGlm() {
+	glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+	glm::mat4 trans;
+	trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+	vec = trans * vec;
+	cout << vec.x << vec.y << vec.z << endl;
+
+}
+
 //创建窗口
 GLFWwindow* initWindow() {
+	//testGlm();
+
 	glfwInit();	//初始化GLFW
 				//配置GLFW中的OpenGL版本号为3.3
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);//主版本号
@@ -85,7 +100,7 @@ int main() {
 
 	int indices[] = {
 		0,1,3,
-		1,2,3
+		1,2,3,
 	};
 
 	unsigned int VBO; //对象id
@@ -186,9 +201,9 @@ int main() {
 		//渲染
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);//设置清空屏幕所用的颜色
 		glClear(GL_COLOR_BUFFER_BIT);//清空颜色缓冲
-		
+
 		//绘制物体
-		
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
@@ -197,8 +212,31 @@ int main() {
 		shader.setFloat("xOffset", xOffset);
 		shader.setFloat("mix_level", mix_level);
 
-		shader.use();//激活渲染程序
+		glm::mat4 trans;
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 0.0, 1.0));
+		trans = glm::translate(trans, glm::vec3(-0.5f, -0.5f, 0.0f));
+		//trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+
+		unsigned int transformLoc = glGetUniformLocation(shader.Program, "transform");
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+
+		//shader.use();//激活渲染程序
 		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		//画第二个
+		trans = glm::mat4();
+		trans = glm::translate(trans, glm::vec3(-0.5f, -0.5f, 0.0f));
+		float scaleAmount = sin(glfwGetTime());
+		trans = glm::scale(trans, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &trans[0][0]);
+
+		//shader.use();//激活渲染程序
+		//glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		trans = glm::mat4();
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, &trans[0][0]);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		//glDrawArrays(GL_TRIANGLES, 0, 3);
 
