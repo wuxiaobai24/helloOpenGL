@@ -33,7 +33,7 @@ void processInput(GLFWwindow *window) {
 		if (xOffset > 1) xOffset = -1;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { // A, mix_level
-		mix_level += 0.005;
+		mix_level += 0.001;
 		if (mix_level >= 1) mix_level = 0;
 	}
 }
@@ -76,12 +76,58 @@ int main() {
 	//创建shader
 	Shader shader("..\\helloworld\\shader\\vertex.vs",
 		"..\\helloworld\\shader\\fragment.fs");
+	/*
 	float vertices[] = {	//四个顶点
 		//位置					//颜色				//纹理坐标
 		 0.5f,  0.5f, 0.0f,		1.0f, 0.0f, 0.0f,	1.0f,1.0f,
 		 0.5f, -0.5f, 0.0f,		0.0f, 1.0f, 0.0f,	1.0f,0.0f,
 		 -0.5f, -0.5f, 0.0f,	0.0f, 0.0f,1.0f,	0.0f,0.0f,
-		 -0.5f, 0.5f, 0.0f,		1.0f,1.0f,0.0f,		0.0f,1.0f
+		 -0.5f, 0.5f, 0.0f,		1.0f,1.0f,0.0f,		0.0f,1.0f,
+	};
+
+	*/
+	float vertices[] = {
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 	};
 	int indices[] = {
 		0,1,3,
@@ -105,12 +151,12 @@ int main() {
 	//参数：顶点属性（位置值，先前在vertexShader源码中设置了location为0了）,
 	//	   顶点属性的大小（vec3),数据的类型，是否标准化，位置数据在缓冲中起始位置的Offset
 	
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);//位置
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);//位置
 	glEnableVertexAttribArray(0);//已在shader中设置location
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));//颜色
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));//纹理
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));//颜色
 	glEnableVertexAttribArray(2);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));//纹理
+	//glEnableVertexAttribArray(2);
 
 	unsigned int texture1;
 	glGenTextures(1, &texture1);
@@ -155,13 +201,26 @@ int main() {
 	glUniform1i(glGetUniformLocation(shader.Program, "ourTexture1"), 0);
 	shader.setInt("ourTexture2", 1);
 
+	glm::vec3 cubePositions[] = {
+		glm::vec3(0.0f,  0.0f,  0.0f),
+		glm::vec3(2.0f,  5.0f, -15.0f),
+		glm::vec3(-1.5f, -2.2f, -2.5f),
+		glm::vec3(-3.8f, -2.0f, -12.3f),
+		glm::vec3(2.4f, -0.4f, -3.5f),
+		glm::vec3(-1.7f,  3.0f, -7.5f),
+		glm::vec3(1.3f, -2.0f, -2.5f),
+		glm::vec3(1.5f,  2.0f, -2.5f),
+		glm::vec3(1.5f,  0.2f, -1.5f),
+		glm::vec3(-1.3f,  1.0f, -1.5f)
+	};
+
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	
+	glEnable(GL_DEPTH_TEST);	//开启深度测试
 	while (!glfwWindowShouldClose(window)) {//渲染循环（Render Loop)
 		processInput(window);//检查输入（按钮）
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);//设置清空屏幕所用的颜色
-		glClear(GL_COLOR_BUFFER_BIT);//清空颜色缓冲
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//清空颜色缓冲
 		//绑定纹理
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
@@ -170,28 +229,33 @@ int main() {
 		//改变uniform
 		shader.setFloat("xOffset", xOffset);
 		shader.setFloat("mix_level", mix_level);
-
-		//glm::mat4 trans;
-		glm::mat4 model;//模型矩阵
-		glm::mat4 view;//观察矩阵
-		glm::mat4 projection;//投影矩阵
-		model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		view = glm::translate(view, glm::vec3(0.f, 0.0f, -sin( (float)glfwGetTime() )*3 -  3.0f));
-		projection = 
-			glm::perspective(glm::radians(45.0f), float(SCREENWIDTH) / float(SCREENHEIGHT),
-			0.1f,100.0f);
-
-
-		shader.setMat4fv("model", model);
-		shader.setMat4fv("view", view);
-		shader.setMat4fv("projection", projection);
-
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
+		for (unsigned int i = 0; i < 10; i++) {
+			//glm::mat4 trans;
+			glm::mat4 model;//模型矩阵
+			glm::mat4 view;//观察矩阵
+			glm::mat4 projection;//投影矩阵
+			model = glm::translate(model, cubePositions[i]);
+			model = glm::rotate(model, cubePositions[i][0] * glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			view = glm::translate(view, glm::vec3(0.f, 0.0f, -sin((float)glfwGetTime()* cubePositions[i][0]) * 3 - 3.0f));
+			projection =
+				glm::perspective(glm::radians(45.0f), float(SCREENWIDTH) / float(SCREENHEIGHT),
+					0.1f, 100.0f);
 
-		glfwSwapBuffers(window);//交换颜色缓冲
-		glfwPollEvents();//检查是否有触发事件
+
+			shader.setMat4fv("model", model);
+			shader.setMat4fv("view", view);
+			shader.setMat4fv("projection", projection);
+
+			//glBindVertexArray(VAO);
+			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+			glfwSwapBuffers(window);//交换颜色缓冲
+			glfwPollEvents();//检查是否有触发事件
 	}
 
 
