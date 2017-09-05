@@ -15,14 +15,15 @@
 
 using namespace std;
 
+//用于设置uniform的全局变量
+float xOffset = 0;
+float mix_level = 0;
+float vOffset = 0;
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 	//回调函数，在window大小被改变时，调用
 	glViewport(0, 0, width, height);
 }
-
-//用于设置uniform的全局变量
-float xOffset = 0;
-float mix_level = 0;
 
 void processInput(GLFWwindow *window) {
 	//检查输入（即是否按下某个键) 在Render Loop中执行，为简洁性，独立一个函数
@@ -35,6 +36,12 @@ void processInput(GLFWwindow *window) {
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) { // A, mix_level
 		mix_level += 0.001;
 		if (mix_level >= 1) mix_level = 0;
+	}
+	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS) { // A, mix_level
+		vOffset += 0.01;
+	}
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS) { // A, mix_level
+		vOffset -= 0.01;
 	}
 }
 
@@ -139,8 +146,6 @@ int main() {
 	glGenVertexArrays(1, &VAO);//创建一个VAO
 	glGenBuffers(1, &EBO);
 	glBindVertexArray(VAO);//绑定VAO
-
-
 						   
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);//把顶点数组复制到缓冲中
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -236,14 +241,15 @@ int main() {
 			glm::mat4 view;//观察矩阵
 			glm::mat4 projection;//投影矩阵
 			model = glm::translate(model, cubePositions[i]);
-			model = glm::rotate(model, cubePositions[i][0] * glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-			model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-			view = glm::translate(view, glm::vec3(0.f, 0.0f, -sin((float)glfwGetTime()* cubePositions[i][0]) * 3 - 3.0f));
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			//model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			//model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+			//model = glm::rotate(model, (float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+			view = glm::translate(view, glm::vec3(vOffset, 0.0f, -4.0f));
 			projection =
 				glm::perspective(glm::radians(45.0f), float(SCREENWIDTH) / float(SCREENHEIGHT),
-					0.1f, 100.0f);
+					0.10f, 100.0f);
 
 
 			shader.setMat4fv("model", model);
